@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobRouter Archive Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 60px 40px;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .option-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(79, 70, 229, 0.2);
+            border-color: #4f46e5;
+        }
+        
+        .option-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(79, 70, 229, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .option-card:hover::before {
+            left: 100%;
+        }
+        
+        .option-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: #4f46e5;
+        }
+        
+        .option-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #1e293b;
+        }
+        
+        .option-description {
+            font-size: 1.1em;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .option-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        
+        .option-features li {
+            padding: 8px 0;
+            color: #475569;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option-features li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .option-button {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .option-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);
+        }
+        
+        .stats-section {
+            background: #f1f5f9;
+            padding: 40px;
+            margin-top: 40px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #4f46e5;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .footer {
+            background: #1e293b;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗂️ JobRouter Archive Manager</h1>
+            <p>Verwalten Sie Ihre Dokumente effizient und sicher</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="stats-section">
+                <h2>📊 System Status</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalUploads">0</div>
+                        <div class="stat-label">Uploads heute</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">✅</div>
+                        <div class="stat-label">System Status</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Upload-Optionen</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">🔒</div>
+                        <div class="stat-label">Sicher verschlüsselt</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="options-grid">
+                <div class="option-card" onclick="openStandardUpload()">
+                    <div class="option-icon">📁</div>
+                    <h3 class="option-title">Standard Dokument Upload</h3>
+                    <p class="option-description">
+                        Einfacher und schneller Upload für allgemeine Dokumente mit Mandant-Information.
+                    </p>
+                    <ul class="option-features">
+                        <li>Drag & Drop Interface</li>
+                        <li>Mandant-Pflichtfeld</li>
+                        <li>PDF, DOC, TXT, Bilder unterstützt</li>
+                        <li>Bis zu 10MB Dateigröße</li>
+                        <li>Sofortige Bestätigung</li>
+                    </ul>
+                    <button class="option-button">Standard Upload starten</button>
+                </div>
+                
+                <div class="option-card" onclick="openRechnungUpload()">
+                    <div class="option-icon">🧾</div>
+                    <h3 class="option-title">Rechnung Upload (Erweitert)</h3>
+                    <p class="option-description">
+                        Spezieller Upload für Rechnungen mit erweiterten Feldern und automatischer Kategorisierung.
+                    </p>
+                    <ul class="option-features">
+                        <li>Rechnungsnummer</li>
+                        <li>Lieferant/Kunde</li>
+                        <li>Betrag und Währung</li>
+                        <li>Rechnungsdatum</li>
+                        <li>Fälligkeitsdatum</li>
+                        <li>Kategorisierung</li>
+                        <li>Automatische Validierung</li>
+                    </ul>
+                    <button class="option-button">Rechnung erweitert</button>
+                </div>
+                
+                <div class="option-card" onclick="openSimpleRechnungUpload()">
+                    <div class="option-icon">📋</div>
+                    <h3 class="option-title">Rechnung Upload (Einfach)</h3>
+                    <p class="option-description">
+                        Schneller Upload nur für Rechnungsdateien mit Mandant - ohne weitere Dateneingabe.
+                    </p>
+                    <ul class="option-features">
+                        <li>Nur Mandant erforderlich</li>
+                        <li>Automatische Rechnung-Kategorisierung</li>
+                        <li>Schneller Upload-Prozess</li>
+                        <li>PDF, JPG, PNG unterstützt</li>
+                        <li>Bis zu 15MB Dateigröße</li>
+                    </ul>
+                    <button class="option-button">Rechnung schnell</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 JobRouter Archive Manager | Sichere Dokumentenverwaltung</p>
+        </div>
+    </div>
+
+    <script>
+        function openStandardUpload() {
+            window.location.href = 'upload_ui.html';
+        }
+        
+        function openRechnungUpload() {
+            window.location.href = 'rechnung_upload.html';
+        }
+        
+        function openSimpleRechnungUpload() {
+            window.location.href = 'simple_rechnung_upload.html';
+        }
+        
+        // Simulate loading stats
+        function loadStats() {
+            // Simulate some stats
+            const uploads = Math.floor(Math.random() * 50) + 10;
+            document.getElementById('totalUploads').textContent = uploads;
+        }
+        
+        // Add some animations on load
+        window.addEventListener('load', function() {
+            loadStats();
+            
+            // Animate cards on scroll
+            const cards = document.querySelectorAll('.option-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(50px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>

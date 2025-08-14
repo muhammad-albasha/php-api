@@ -1,0 +1,3 @@
+2025-08-14 09:44:04 - Simple Rechnung Error: Simple invoice upload failed for invoice.pdf: Client error: `POST https://jracademy.demo.jobrouter.cloud/api/rest/v2/application/jobarchive/archives/220BD671-D875-FF15-6C99-22022682020D/documents` resulted in a `422 Unprocessable Entity` response:
+{"errors":{"-":["Unknown index field(s): Dokumenttyp, Upload_Datum, Upload_Typ"]}}
+

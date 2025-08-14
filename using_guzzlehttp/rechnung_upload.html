@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Standard Upload - Dokumentenverwaltung</title>
+    <title>Erweiterte Rechnung - Dokumentenverwaltung</title>
     <style>
         * {
             margin: 0;
@@ -21,7 +21,7 @@
         }
         
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
@@ -53,18 +53,18 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255,255,255,0.2);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             transition: all 0.3s ease;
         }
         
         .back-button:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255,255,255,0.3);
         }
         
         .form-container {
@@ -82,13 +82,13 @@
         }
         
         .upload-area:hover {
-            border-color: #4f46e5;
-            background-color: #f8fafc;
+            border-color: #f59e0b;
+            background-color: #fffbeb;
         }
         
         .upload-area.dragover {
-            border-color: #4f46e5;
-            background-color: #eef2ff;
+            border-color: #f59e0b;
+            background-color: #fef3c7;
         }
         
         .upload-icon {
@@ -112,8 +112,19 @@
             display: none;
         }
         
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
         .form-group {
             margin-bottom: 25px;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
         }
         
         .form-group label {
@@ -123,7 +134,11 @@
             color: #374151;
         }
         
-        .form-group input, .form-group textarea {
+        .required {
+            color: #ef4444;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #e5e7eb;
@@ -132,15 +147,15 @@
             transition: border-color 0.3s ease;
         }
         
-        .form-group input:focus, .form-group textarea:focus {
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
         }
         
         .selected-file {
-            background: #f0f9ff;
-            border: 2px solid #0ea5e9;
+            background: #fffbeb;
+            border: 2px solid #f59e0b;
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 20px;
@@ -155,16 +170,16 @@
         
         .file-icon {
             font-size: 1.5em;
-            color: #0ea5e9;
+            color: #f59e0b;
         }
         
         .file-details h4 {
-            color: #0c4a6e;
+            color: #92400e;
             margin-bottom: 5px;
         }
         
         .file-details p {
-            color: #075985;
+            color: #b45309;
             font-size: 0.9em;
         }
         
@@ -204,7 +219,7 @@
         }
         
         .result.success {
-            background: #f0f9ff;
+            background: #f0fdf4;
             border: 2px solid #10b981;
             color: #065f46;
         }
@@ -223,7 +238,7 @@
         
         .spinner {
             border: 4px solid #f3f4f6;
-            border-top: 4px solid #4f46e5;
+            border-top: 4px solid #f59e0b;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -235,23 +250,29 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <button class="back-button" onclick="goBack()">← Zurück</button>
-            <h1>📁 Standard Upload</h1>
-            <p>Laden Sie Ihre Dokumente sicher ins Archive hoch</p>
+            <h1>📄 Erweiterte Rechnung</h1>
+            <p>Vollständige Rechnungsdokumentation mit allen Details</p>
         </div>
         
         <div class="form-container">
-            <form id="uploadForm" enctype="multipart/form-data">
+            <form id="rechnungForm" enctype="multipart/form-data">
                 <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📎</div>
-                    <div class="upload-text">Datei hier hinziehen oder klicken zum Auswählen</div>
-                    <div class="upload-subtext">Unterstützte Formate: PDF, TXT, DOC, DOCX, JPG, PNG</div>
-                    <input type="file" id="fileInput" class="file-input" name="file" accept=".pdf,.txt,.doc,.docx,.jpg,.jpeg,.png">
+                    <div class="upload-icon">🧾</div>
+                    <div class="upload-text">Rechnungs-PDF hier hinziehen oder klicken</div>
+                    <div class="upload-subtext">Unterstützte Formate: PDF, JPG, PNG</div>
+                    <input type="file" id="fileInput" class="file-input" name="file" accept=".pdf,.jpg,.jpeg,.png">
                 </div>
                 
                 <div class="selected-file" id="selectedFile">
@@ -264,19 +285,75 @@
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="mandant">Mandant *:</label>
-                    <input type="text" id="mandant" name="mandant" placeholder="z.B. Firma Mustermann GmbH" required>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="rechnungsnummer">Rechnungsnummer <span class="required">*</span>:</label>
+                        <input type="text" id="rechnungsnummer" name="rechnungsnummer" placeholder="z.B. RE-2025-001" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lieferant">Lieferant/Kunde <span class="required">*</span>:</label>
+                        <input type="text" id="lieferant" name="lieferant" placeholder="z.B. Mustermann GmbH" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="betrag">Rechnungsbetrag <span class="required">*</span>:</label>
+                        <input type="number" id="betrag" name="betrag" step="0.01" placeholder="0.00" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="waehrung">Währung:</label>
+                        <select id="waehrung" name="waehrung">
+                            <option value="EUR" selected>EUR</option>
+                            <option value="USD">USD</option>
+                            <option value="GBP">GBP</option>
+                            <option value="CHF">CHF</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rechnungsdatum">Rechnungsdatum <span class="required">*</span>:</label>
+                        <input type="date" id="rechnungsdatum" name="rechnungsdatum" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="faelligkeitsdatum">Fälligkeitsdatum:</label>
+                        <input type="date" id="faelligkeitsdatum" name="faelligkeitsdatum">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="kategorie">Kategorie:</label>
+                        <select id="kategorie" name="kategorie">
+                            <option value="">Bitte wählen...</option>
+                            <option value="Material">Material & Einkauf</option>
+                            <option value="Dienstleistung">Dienstleistungen</option>
+                            <option value="Software">Software & Lizenzen</option>
+                            <option value="Reisekosten">Reisekosten</option>
+                            <option value="Miete">Miete & Nebenkosten</option>
+                            <option value="Marketing">Marketing & Werbung</option>
+                            <option value="Sonstiges">Sonstiges</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mandant">Mandant <span class="required">*</span>:</label>
+                        <input type="text" id="mandant" name="mandant" placeholder="z.B. Firma Mustermann GmbH" required>
+                    </div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="bemerkungen">Bemerkungen:</label>
+                    <textarea id="bemerkungen" name="bemerkungen" rows="3" placeholder="Zusätzliche Informationen zur Rechnung..."></textarea>
                 </div>
                 
                 <button type="submit" class="submit-btn" id="submitBtn" disabled>
-                    📤 Datei hochladen
+                    📤 Rechnung hochladen
                 </button>
             </form>
             
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p>Datei wird hochgeladen...</p>
+                <p>Rechnung wird verarbeitet...</p>
             </div>
             
             <div class="result" id="result">
@@ -293,11 +370,18 @@
         const fileName = document.getElementById('fileName');
         const fileSize = document.getElementById('fileSize');
         const submitBtn = document.getElementById('submitBtn');
-        const uploadForm = document.getElementById('uploadForm');
+        const rechnungForm = document.getElementById('rechnungForm');
         const loading = document.getElementById('loading');
         const result = document.getElementById('result');
         const resultTitle = document.getElementById('resultTitle');
         const resultMessage = document.getElementById('resultMessage');
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        // Set today's date as default
+        document.getElementById('rechnungsdatum').valueAsDate = new Date();
 
         // Click to select file
         uploadArea.addEventListener('click', () => fileInput.click());
@@ -332,7 +416,7 @@
             fileName.textContent = file.name;
             fileSize.textContent = formatFileSize(file.size);
             selectedFile.style.display = 'block';
-            submitBtn.disabled = false;
+            checkFormValidity();
             
             // Update file input
             const dt = new DataTransfer();
@@ -348,18 +432,25 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
+        function checkFormValidity() {
+            const requiredFields = ['rechnungsnummer', 'lieferant', 'betrag', 'rechnungsdatum', 'mandant'];
+            const hasFile = fileInput.files[0];
+            const allFieldsFilled = requiredFields.every(field => document.getElementById(field).value.trim());
+            
+            submitBtn.disabled = !(hasFile && allFieldsFilled);
+        }
+
+        // Add event listeners to required fields
+        ['rechnungsnummer', 'lieferant', 'betrag', 'rechnungsdatum', 'mandant'].forEach(field => {
+            document.getElementById(field).addEventListener('input', checkFormValidity);
+        });
+
         // Form submission
-        uploadForm.addEventListener('submit', async (e) => {
+        rechnungForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             if (!fileInput.files[0]) {
-                showResult('error', 'Fehler', 'Bitte wählen Sie eine Datei aus.');
-                return;
-            }
-
-            const mandantValue = document.getElementById('mandant').value.trim();
-            if (!mandantValue) {
-                showResult('error', 'Fehler', 'Bitte geben Sie einen Mandanten ein.');
+                showResult('error', 'Fehler', 'Bitte wählen Sie eine Rechnungsdatei aus.');
                 return;
             }
 
@@ -369,10 +460,18 @@
 
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
-            formData.append('mandant', mandantValue);
+            formData.append('rechnungsnummer', document.getElementById('rechnungsnummer').value);
+            formData.append('lieferant', document.getElementById('lieferant').value);
+            formData.append('betrag', document.getElementById('betrag').value);
+            formData.append('waehrung', document.getElementById('waehrung').value);
+            formData.append('rechnungsdatum', document.getElementById('rechnungsdatum').value);
+            formData.append('faelligkeitsdatum', document.getElementById('faelligkeitsdatum').value);
+            formData.append('kategorie', document.getElementById('kategorie').value);
+            formData.append('mandant', document.getElementById('mandant').value);
+            formData.append('bemerkungen', document.getElementById('bemerkungen').value);
 
             try {
-                const response = await fetch('./upload_handler_clean.php', {
+                const response = await fetch('./rechnung_handler.php', {
                     method: 'POST',
                     body: formData
                 });
@@ -393,11 +492,12 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showResult('success', '✅ Upload erfolgreich!', 
-                        `Dokument wurde erfolgreich hochgeladen.<br>
+                    showResult('success', '✅ Rechnung erfolgreich hochgeladen!', 
+                        `Ihre Rechnung wurde erfolgreich verarbeitet und archiviert.<br>
                          <strong>Dokument-ID:</strong> ${data.documentId}<br>
-                         <strong>Dateiname:</strong> ${data.filename}<br>
-                         <strong>Mandant:</strong> ${mandantValue}`);
+                         <strong>Rechnungsnummer:</strong> ${data.rechnungsnummer}<br>
+                         <strong>Lieferant:</strong> ${data.lieferant}<br>
+                         <strong>Betrag:</strong> ${data.betrag} ${data.waehrung}`);
                     resetForm();
                 } else {
                     showResult('error', '❌ Upload fehlgeschlagen', 
@@ -422,13 +522,10 @@
         }
 
         function resetForm() {
-            uploadForm.reset();
+            rechnungForm.reset();
             selectedFile.style.display = 'none';
             submitBtn.disabled = true;
-        }
-
-        function goBack() {
-            window.location.href = 'index.html';
+            document.getElementById('rechnungsdatum').valueAsDate = new Date();
         }
     </script>
 </body>

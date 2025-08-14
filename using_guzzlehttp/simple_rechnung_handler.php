@@ -36,7 +36,7 @@ function logError($message) {
     if (!is_dir($logDir)) {
         @mkdir($logDir, 0777, true);
     }
-    @error_log(date('Y-m-d H:i:s') . " - Upload Error: " . $message . "\n", 3, $logDir . '/upload_errors.log');
+    @error_log(date('Y-m-d H:i:s') . " - Simple Rechnung Error: " . $message . "\n", 3, $logDir . '/simple_rechnung_errors.log');
 }
 
 function logSuccess($message) {
@@ -44,7 +44,7 @@ function logSuccess($message) {
     if (!is_dir($logDir)) {
         @mkdir($logDir, 0777, true);
     }
-    @error_log(date('Y-m-d H:i:s') . " - Upload Success: " . $message . "\n", 3, $logDir . '/upload_success.log');
+    @error_log(date('Y-m-d H:i:s') . " - Simple Rechnung Success: " . $message . "\n", 3, $logDir . '/simple_rechnung_success.log');
 }
 
 try {
@@ -54,59 +54,71 @@ try {
     }
 
     $uploadedFile = $_FILES['file'];
-    $mandant = trim($_POST['mandant'] ?? '');
+    $mandant = 'Automatisch'; // Default value for simple upload without Mandant
 
-    // Validate required fields
-    if (empty($mandant)) {
-        sendJsonResponse(false, ['error' => 'Mandant ist ein Pflichtfeld.']);
-    }
+    // No required field validation - allow upload without additional data
 
-    // Validate file type
-    $allowedTypes = ['application/pdf', 'text/plain', 'application/msword', 
-                     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                     'image/jpeg', 'image/png'];
+    // Validate file type (invoices only)
+    $allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
     
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mimeType = finfo_file($finfo, $uploadedFile['tmp_name']);
     finfo_close($finfo);
 
     if (!in_array($mimeType, $allowedTypes)) {
-        sendJsonResponse(false, ['error' => 'Dateityp nicht erlaubt. Erlaubt sind: PDF, TXT, DOC, DOCX, JPG, PNG']);
+        sendJsonResponse(false, ['error' => 'Dateityp nicht erlaubt. Erlaubt sind: PDF, JPG, PNG']);
     }
 
-    // Check file size (max 10MB)
-    if ($uploadedFile['size'] > 10 * 1024 * 1024) {
-        sendJsonResponse(false, ['error' => 'Datei zu groß. Maximale Größe: 10MB']);
+    // Check file size (max 15MB for invoices)
+    if ($uploadedFile['size'] > 15 * 1024 * 1024) {
+        sendJsonResponse(false, ['error' => 'Datei zu groß. Maximale Größe: 15MB']);
     }
 
-    // Prepare document data for archive
+    // Prepare document data for archive with minimal invoice data
     $documentContentAndMetaData = [
         [
             'name' => 'files[0]',
             'contents' => fopen($uploadedFile['tmp_name'], 'r'),
             'filename' => $uploadedFile['name']
-        ],
-        [
-            'name' => 'indexFields[0][name]',
-            'contents' => 'Mandant'
-        ],
-        [
-            'name' => 'indexFields[0][value]',
-            'contents' => $mandant
-        ],
-        [
-            'name' => 'indexFields[1][name]',
-            'contents' => 'Aktiv'
-        ],
-        [
-            'name' => 'indexFields[1][value]',
-            'contents' => '1'
         ]
     ];
 
-    // Custom DocumentManager for UI with better error handling
-    class UIDocumentManager extends DocumentManager {
-        public function archiveDocumentUI($documentContentAndMetaData) {
+    // Add minimal index fields for simple invoice upload
+    $indexFieldCounter = 0;
+    
+    $indexFields = [
+        'Mandant' => $mandant,
+        'Dokumenttyp' => 'Rechnung',
+        'Upload_Datum' => date('Y-m-d H:i:s'),
+        'Upload_Typ' => 'Einfacher_Upload'
+    ];
+
+    // Add all index fields to multipart data
+    foreach ($indexFields as $fieldName => $fieldValue) {
+        $documentContentAndMetaData[] = [
+            'name' => "indexFields[{$indexFieldCounter}][name]",
+            'contents' => $fieldName
+        ];
+        $documentContentAndMetaData[] = [
+            'name' => "indexFields[{$indexFieldCounter}][value]",
+            'contents' => $fieldValue
+        ];
+        $indexFieldCounter++;
+    }
+
+    // Always add "Aktiv" field with value "1"
+    $documentContentAndMetaData[] = [
+        'name' => "indexFields[{$indexFieldCounter}][name]",
+        'contents' => 'Aktiv'
+    ];
+    $documentContentAndMetaData[] = [
+        'name' => "indexFields[{$indexFieldCounter}][value]",
+        'contents' => '1'
+    ];
+
+    // Custom DocumentManager for simple invoice UI
+    class SimpleInvoiceDocumentManager extends DocumentManager {
+        public function archiveSimpleInvoiceUI($documentContentAndMetaData) {
             try {
                 $response = $this->client->request(
                     'POST',
@@ -144,21 +156,24 @@ try {
         }
     }
 
-    // Upload to archive
-    $documentManager = new UIDocumentManager(new Authenticator());
-    $result = $documentManager->archiveDocumentUI($documentContentAndMetaData);
+    // Upload simple invoice to archive
+    $documentManager = new SimpleInvoiceDocumentManager(new Authenticator());
+    $result = $documentManager->archiveSimpleInvoiceUI($documentContentAndMetaData);
 
     if ($result['success']) {
-        logSuccess("Successfully uploaded: {$uploadedFile['name']} (ID: {$result['documentId']}) - Mandant: $mandant");
+        $logMessage = "Successfully uploaded simple invoice: {$uploadedFile['name']} (ID: {$result['documentId']}) - Mandant: $mandant";
+        logSuccess($logMessage);
 
         sendJsonResponse(true, [
             'documentId' => $result['documentId'],
             'filename' => $uploadedFile['name'],
             'size' => $uploadedFile['size'],
-            'mandant' => $mandant
+            'mandant' => $mandant,
+            'documentType' => 'Rechnung',
+            'uploadType' => 'Einfacher Upload'
         ]);
     } else {
-        logError("Upload failed for {$uploadedFile['name']}: " . $result['error']);
+        logError("Simple invoice upload failed for {$uploadedFile['name']}: " . $result['error']);
         sendJsonResponse(false, ['error' => $result['error']]);
     }
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Standard Upload - Dokumentenverwaltung</title>
+    <title>Einfacher Rechnung Upload - JobRouter Archive</title>
     <style>
         * {
             margin: 0;
@@ -13,68 +13,83 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #2c3e50;
-            line-height: 1.6;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
             min-height: 100vh;
             padding: 20px;
         }
         
         .container {
-            max-width: 800px;
+            max-width: 700px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
         }
         
         .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
         }
         
         .header h1 {
-            font-size: 2.5rem;
-            font-weight: 300;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
+            font-size: 2.5em;
+            margin-bottom: 10px;
         }
         
         .header p {
-            font-size: 1.1rem;
+            font-size: 1.1em;
             opacity: 0.9;
-            font-weight: 300;
         }
         
         .back-button {
             position: absolute;
             top: 20px;
             left: 20px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255,255,255,0.2);
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 10px 20px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
             transition: all 0.3s ease;
         }
         
         .back-button:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255,255,255,0.3);
         }
         
         .form-container {
             padding: 40px;
         }
         
+        .info-banner {
+            background: #f0fdf4;
+            border: 2px solid #059669;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .info-banner h3 {
+            color: #047857;
+            margin-bottom: 10px;
+        }
+        
+        .info-banner p {
+            color: #065f46;
+            line-height: 1.5;
+        }
+        
         .upload-area {
             border: 3px dashed #d1d5db;
             border-radius: 10px;
-            padding: 40px;
+            padding: 50px;
             text-align: center;
             margin-bottom: 30px;
             transition: all 0.3s ease;
@@ -82,30 +97,31 @@
         }
         
         .upload-area:hover {
-            border-color: #4f46e5;
-            background-color: #f8fafc;
+            border-color: #059669;
+            background-color: #f0fdf4;
         }
         
         .upload-area.dragover {
-            border-color: #4f46e5;
-            background-color: #eef2ff;
+            border-color: #059669;
+            background-color: #dcfce7;
         }
         
         .upload-icon {
-            font-size: 3em;
+            font-size: 4em;
             color: #9ca3af;
             margin-bottom: 20px;
         }
         
         .upload-text {
-            font-size: 1.2em;
+            font-size: 1.3em;
             color: #374151;
             margin-bottom: 10px;
+            font-weight: 600;
         }
         
         .upload-subtext {
             color: #6b7280;
-            font-size: 0.9em;
+            font-size: 1em;
         }
         
         .file-input {
@@ -121,72 +137,75 @@
             margin-bottom: 8px;
             font-weight: 600;
             color: #374151;
+            font-size: 1.1em;
         }
         
-        .form-group input, .form-group textarea {
+        .required {
+            color: #ef4444;
+        }
+        
+        .form-group input {
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             border: 2px solid #e5e7eb;
             border-radius: 8px;
             font-size: 16px;
             transition: border-color 0.3s ease;
         }
         
-        .form-group input:focus, .form-group textarea:focus {
+        .form-group input:focus {
             outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
         }
         
         .selected-file {
-            background: #f0f9ff;
-            border: 2px solid #0ea5e9;
+            background: #f0fdf4;
+            border: 2px solid #059669;
             border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
             display: none;
         }
         
         .file-info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
         
         .file-icon {
-            font-size: 1.5em;
-            color: #0ea5e9;
+            font-size: 2em;
+            color: #059669;
         }
         
         .file-details h4 {
-            color: #0c4a6e;
+            color: #047857;
             margin-bottom: 5px;
+            font-size: 1.1em;
         }
         
         .file-details p {
-            color: #075985;
+            color: #065f46;
             font-size: 0.9em;
         }
         
         .submit-btn {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.1em;
-            font-weight: 500;
-            border-radius: 8px;
+            padding: 18px 40px;
+            font-size: 1.2em;
+            font-weight: 600;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             width: 100%;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
         
         .submit-btn:hover {
-            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+            box-shadow: 0 10px 25px rgba(5, 150, 105, 0.3);
         }
         
         .submit-btn:disabled {
@@ -204,7 +223,7 @@
         }
         
         .result.success {
-            background: #f0f9ff;
+            background: #f0fdf4;
             border: 2px solid #10b981;
             color: #065f46;
         }
@@ -223,10 +242,10 @@
         
         .spinner {
             border: 4px solid #f3f4f6;
-            border-top: 4px solid #4f46e5;
+            border-top: 4px solid #059669;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             animation: spin 1s linear infinite;
             margin: 0 auto 15px;
         }
@@ -235,23 +254,70 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        .feature-list {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .feature-list h4 {
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .feature-list ul {
+            list-style: none;
+        }
+        
+        .feature-list li {
+            padding: 5px 0;
+            color: #475569;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-list li::before {
+            content: '✓';
+            color: #059669;
+            font-weight: bold;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <button class="back-button" onclick="goBack()">← Zurück</button>
-            <h1>📁 Standard Upload</h1>
-            <p>Laden Sie Ihre Dokumente sicher ins Archive hoch</p>
+            <h1>📋 Rechnung Upload (Einfach)</h1>
+            <p>Schneller Upload für Rechnungen ohne Dateneingabe</p>
         </div>
         
         <div class="form-container">
-            <form id="uploadForm" enctype="multipart/form-data">
+            <div class="info-banner">
+                <h3>🚀 Ultra Schnell & Einfach</h3>
+                <p>Laden Sie Ihre Rechnung hoch - fertig! Keine weitere Dateneingabe erforderlich. Das System kategorisiert automatisch als Rechnung.</p>
+            </div>
+            
+            <div class="feature-list">
+                <h4>Was passiert automatisch:</h4>
+                <ul>
+                    <li>Dokumenttyp wird als "Rechnung" markiert</li>
+                    <li>Upload-Datum wird automatisch gesetzt</li>
+                    <li>Datei wird sicher im Archive gespeichert</li>
+                    <li>Sofortige Bestätigung mit Dokument-ID</li>
+                    <li>Keine manuelle Dateneingabe nötig</li>
+                </ul>
+            </div>
+            
+            <form id="simpleRechnungForm" enctype="multipart/form-data">
                 <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📎</div>
-                    <div class="upload-text">Datei hier hinziehen oder klicken zum Auswählen</div>
-                    <div class="upload-subtext">Unterstützte Formate: PDF, TXT, DOC, DOCX, JPG, PNG</div>
-                    <input type="file" id="fileInput" class="file-input" name="file" accept=".pdf,.txt,.doc,.docx,.jpg,.jpeg,.png">
+                    <div class="upload-icon">📋</div>
+                    <div class="upload-text">Rechnungsdatei hier hinziehen oder klicken</div>
+                    <div class="upload-subtext">PDF, JPG oder PNG • Bis zu 15MB</div>
+                    <input type="file" id="fileInput" class="file-input" name="file" accept=".pdf,.jpg,.jpeg,.png">
                 </div>
                 
                 <div class="selected-file" id="selectedFile">
@@ -264,19 +330,19 @@
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="mandant">Mandant *:</label>
-                    <input type="text" id="mandant" name="mandant" placeholder="z.B. Firma Mustermann GmbH" required>
+                <div class="form-group" style="display: none;">
+                    <label for="mandant">Mandant:</label>
+                    <input type="hidden" id="mandant" name="mandant" value="Automatisch">
                 </div>
                 
                 <button type="submit" class="submit-btn" id="submitBtn" disabled>
-                    📤 Datei hochladen
+                    📤 Rechnung sofort hochladen
                 </button>
             </form>
             
             <div class="loading" id="loading">
                 <div class="spinner"></div>
-                <p>Datei wird hochgeladen...</p>
+                <p>Rechnung wird hochgeladen...</p>
             </div>
             
             <div class="result" id="result">
@@ -293,11 +359,15 @@
         const fileName = document.getElementById('fileName');
         const fileSize = document.getElementById('fileSize');
         const submitBtn = document.getElementById('submitBtn');
-        const uploadForm = document.getElementById('uploadForm');
+        const simpleRechnungForm = document.getElementById('simpleRechnungForm');
         const loading = document.getElementById('loading');
         const result = document.getElementById('result');
         const resultTitle = document.getElementById('resultTitle');
         const resultMessage = document.getElementById('resultMessage');
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
 
         // Click to select file
         uploadArea.addEventListener('click', () => fileInput.click());
@@ -332,7 +402,7 @@
             fileName.textContent = file.name;
             fileSize.textContent = formatFileSize(file.size);
             selectedFile.style.display = 'block';
-            submitBtn.disabled = false;
+            checkFormValidity();
             
             // Update file input
             const dt = new DataTransfer();
@@ -348,12 +418,22 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
+        function checkFormValidity() {
+            const mandantValue = document.getElementById('mandant').value.trim();
+            const hasFile = fileInput.files[0];
+            
+            submitBtn.disabled = !(hasFile && mandantValue);
+        }
+
+        // Add event listener to mandant field
+        document.getElementById('mandant').addEventListener('input', checkFormValidity);
+
         // Form submission
-        uploadForm.addEventListener('submit', async (e) => {
+        simpleRechnungForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             if (!fileInput.files[0]) {
-                showResult('error', 'Fehler', 'Bitte wählen Sie eine Datei aus.');
+                showResult('error', 'Fehler', 'Bitte wählen Sie eine Rechnungsdatei aus.');
                 return;
             }
 
@@ -372,7 +452,7 @@
             formData.append('mandant', mandantValue);
 
             try {
-                const response = await fetch('./upload_handler_clean.php', {
+                const response = await fetch('./simple_rechnung_handler.php', {
                     method: 'POST',
                     body: formData
                 });
@@ -393,11 +473,12 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    showResult('success', '✅ Upload erfolgreich!', 
-                        `Dokument wurde erfolgreich hochgeladen.<br>
+                    showResult('success', '✅ Rechnung erfolgreich hochgeladen!', 
+                        `Ihre Rechnung wurde erfolgreich archiviert.<br>
                          <strong>Dokument-ID:</strong> ${data.documentId}<br>
                          <strong>Dateiname:</strong> ${data.filename}<br>
-                         <strong>Mandant:</strong> ${mandantValue}`);
+                         <strong>Mandant:</strong> ${data.mandant}<br>
+                         <strong>Typ:</strong> Rechnung (automatisch)`);
                     resetForm();
                 } else {
                     showResult('error', '❌ Upload fehlgeschlagen', 
@@ -422,13 +503,9 @@
         }
 
         function resetForm() {
-            uploadForm.reset();
+            simpleRechnungForm.reset();
             selectedFile.style.display = 'none';
             submitBtn.disabled = true;
-        }
-
-        function goBack() {
-            window.location.href = 'index.html';
         }
     </script>
 </body>
