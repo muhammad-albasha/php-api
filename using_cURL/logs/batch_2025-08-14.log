@@ -1,0 +1,21 @@
+[2025-08-14 07:02:11] === Batch-Upload gestartet ===
+[2025-08-14 07:02:11] Upload: test_rechnung_auto.txt
+[2025-08-14 07:02:12] ✅ Upload erfolgreich - ID: 618 - test_rechnung_auto.txt
+[2025-08-14 07:02:12] Datei archiviert: 2025-08-14_07-02-12_test_rechnung_auto.txt
+[2025-08-14 07:02:12] Batch abgeschlossen: 1 erfolgreich, 0 Fehler
+[2025-08-14 07:07:17] === Batch-Upload gestartet ===
+[2025-08-14 07:07:17] E-Rechnung Upload: musterfirma_xrechnung_2025001.xml
+[2025-08-14 07:07:17] E-Rechnung-Typ: XRechnung
+[2025-08-14 07:07:18] ✅ E-Rechnung Upload erfolgreich - ID: 619 - musterfirma_xrechnung_2025001.xml | Typ: XRechnung | RG-Nr: E-RE-2025-001
+[2025-08-14 07:07:18] Datei archiviert: 2025-08-14_07-07-18_musterfirma_xrechnung_2025001.xml
+[2025-08-14 07:07:18] E-Rechnung Upload: techservice_json_invoice_2025002.json
+[2025-08-14 07:07:18] E-Rechnung-Typ: JSON-E-Rechnung
+[2025-08-14 07:07:19] ✅ E-Rechnung Upload erfolgreich - ID: 620 - techservice_json_invoice_2025002.json | Typ: JSON-E-Rechnung
+[2025-08-14 07:07:19] Datei archiviert: 2025-08-14_07-07-19_techservice_json_invoice_2025002.json
+[2025-08-14 07:07:19] Batch abgeschlossen: 2 erfolgreich, 0 Fehler
+[2025-08-14 07:11:01] === Batch-Upload gestartet ===
+[2025-08-14 07:11:01] E-Rechnung Upload: Rechnung.pdf
+[2025-08-14 07:11:01] E-Rechnung-Typ: Dateiname-basiert
+[2025-08-14 07:11:02] ✅ E-Rechnung Upload erfolgreich - ID: 621 - Rechnung.pdf | Typ: Dateiname-basiert
+[2025-08-14 07:11:02] Datei archiviert: 2025-08-14_07-11-02_Rechnung.pdf
+[2025-08-14 07:11:02] Batch abgeschlossen: 1 erfolgreich, 0 Fehler

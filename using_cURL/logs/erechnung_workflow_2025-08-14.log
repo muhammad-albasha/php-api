@@ -1,0 +1,8 @@
+[2025-08-14 07:33:20] === E-Rechnung Workflow gestartet: workflow_test_klein_500eur.xml ===
+[2025-08-14 07:33:20] E-Rechnung geparst - Typ: XRechnung
+[2025-08-14 07:33:20] Workflow-Entscheidung: Automatische Genehmigung (Betrag ≤ 1000 EUR)
+[2025-08-14 07:33:21] Workflow-Start fehlgeschlagen: Unerwartete Antwort
+[2025-08-14 07:33:21] === E-Rechnung Workflow gestartet: workflow_test_gross_17850eur.json ===
+[2025-08-14 07:33:21] E-Rechnung geparst - Typ: JSON-E-Rechnung
+[2025-08-14 07:33:21] Workflow-Entscheidung: Automatische Genehmigung (Betrag ≤ 1000 EUR)
+[2025-08-14 07:33:22] Workflow-Start fehlgeschlagen: Unerwartete Antwort
