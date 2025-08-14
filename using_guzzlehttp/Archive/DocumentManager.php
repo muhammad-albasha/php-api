@@ -2,9 +2,9 @@
 
 class DocumentManager
 {
-    private $authenticator;
-    private $client;
-    private $sessionId;
+    protected $authenticator;
+    protected $client;
+    protected $sessionId;
 
     const RESOURCE_URI = 'application/jobarchive/archives/' . ARCHIVE . '/documents';
     const RESOURCE_URI_MAIN_FILE = self::RESOURCE_URI . '/##revision##/file';

@@ -1,0 +1,9 @@
+2025-08-14 09:06:05 - Upload Error: Upload failed for Rechnung.pdf: Client error: `POST https://jracademy.demo.jobrouter.cloud/api/rest/v2/application/jobarchive/archives/220BD671-D875-FF15-6C99-22022682020D/documents` resulted in a `422 Unprocessable Entity` response:
+{"errors":{"-":["Unknown index field(s): Upload_Datum"]}}
+
+2025-08-14 09:06:14 - Upload Error: Upload failed for Rechnung.pdf: Client error: `POST https://jracademy.demo.jobrouter.cloud/api/rest/v2/application/jobarchive/archives/220BD671-D875-FF15-6C99-22022682020D/documents` resulted in a `422 Unprocessable Entity` response:
+{"errors":{"-":["Unknown index field(s): Beschreibung, Upload_Datum"]}}
+
+2025-08-14 09:07:30 - Upload Error: Upload failed for test.txt: Client error: `POST https://jracademy.demo.jobrouter.cloud/api/rest/v2/application/jobarchive/archives/220BD671-D875-FF15-6C99-22022682020D/documents` resulted in a `422 Unprocessable Entity` response:
+{"errors":{"-":["Unknown index field(s): Beschreibung, Upload_Datum"]}}
+

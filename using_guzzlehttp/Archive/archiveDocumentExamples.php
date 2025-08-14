@@ -17,14 +17,15 @@
 require_once(__DIR__ . '/../init.php');
 require_once('DocumentManager.php');
 
-const FILES_STORAGE = __DIR__ . '/../../test_files/';
+const FILES_STORAGE = 'c:\\Users\\MAlbasha\\Desktop\\php-api\\test_files\\';
 
 function createDocumentWithoutIndexFields()
 {
     $documentContentAndMetaData = [
         [
-            'name' => 'files',
+            'name' => 'files[0]',
             'contents' => fopen(FILES_STORAGE . 'hello.txt', 'r'),
+            'filename' => 'hello.txt'
         ],
     ];
 
@@ -143,7 +144,7 @@ function createDocumentWithKeywords()
  * uncomment function call to execute desired action
  */
 
-//createDocumentWithoutIndexFields();
+createDocumentWithoutIndexFields();
 //createDocumentWithMultipleIndexFields();
 //createDocumentWithMultipleFiles();
 //createDocumentWithKeywords();
