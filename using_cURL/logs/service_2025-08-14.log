@@ -1,0 +1,5 @@
+[2025-08-14 16:40:56] === Rechnung Upload Service gestartet ===
+[2025-08-14 16:40:56] Überwache Ordner: C:\Users\Muhammad\Desktop\php-api\using_cURL/incoming/
+[2025-08-14 16:40:56] Verarbeitete Dateien: C:\Users\Muhammad\Desktop\php-api\using_cURL/processed/
+[2025-08-14 16:42:11] Neue E-Rechnung gefunden: invoice.pdf
+[2025-08-14 16:42:11] Starte E-Rechnung Upload für: invoice.pdf

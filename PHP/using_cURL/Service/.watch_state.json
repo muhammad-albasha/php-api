@@ -1,0 +1,24 @@
+{
+    "processed": {
+        "C:\\Users\\Muhammad\\Desktop\\PHP\\using_cURL\\files\\invoice2.pdf": {
+            "docuId": 689,
+            "uploadedAt": "2025-08-14T21:02:34+00:00",
+            "processStarted": true,
+            "incidentNumber": "40",
+            "workflowId": "9ygGTCfx4ZISUvZ6k5WYemIplZKDtU7q0000010914",
+            "revisionId": 689,
+            "movedTo": "C:\\Users\\Muhammad\\Desktop\\PHP\\using_cURL\\files\\\\Archiv\\invoice2 (2).pdf",
+            "movedAt": "2025-08-14T21:02:34+00:00"
+        },
+        "C:\\Users\\Muhammad\\Desktop\\PHP\\using_cURL\\files\\invoice1.pdf": {
+            "docuId": 690,
+            "uploadedAt": "2025-08-14T21:03:17+00:00",
+            "processStarted": true,
+            "incidentNumber": "41",
+            "workflowId": "9ygGTCfx4ZISUvZ6k5WYemIplZKDtU7q0000010918",
+            "revisionId": 690,
+            "movedTo": "C:\\Users\\Muhammad\\Desktop\\PHP\\using_cURL\\files\\\\Archiv\\invoice1 (1).pdf",
+            "movedAt": "2025-08-14T21:03:17+00:00"
+        }
+    }
+}
