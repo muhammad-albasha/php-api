@@ -44,10 +44,19 @@ class CurlClient
 
         $code = curl_getinfo($this->curlHandle, CURLINFO_HTTP_CODE);
 
-        if ($code !== 201) {
+        if ($response === false) {
+            $err = curl_error($this->curlHandle);
+            $eno = curl_errno($this->curlHandle);
             $this->close();
             $this->emptyJar();
-            $msg = 'Authentication Error: ' . $code . ' Response: ' . var_export($response, true);
+            throw new Exception('Authentication cURL Error: #' . $eno . ' ' . $err);
+        }
+
+        if ($code !== 201) {
+            $info = curl_getinfo($this->curlHandle);
+            $this->close();
+            $this->emptyJar();
+            $msg = 'Authentication Error: ' . $code . ' Response: ' . var_export($response, true) . ' Info: ' . var_export($info, true);
             throw new Exception($msg);
         }
 
@@ -279,8 +288,23 @@ class CurlClient
     private function configureDefaults()
     {
         // Avoid hanging forever on network issues
-        curl_setopt($this->curlHandle, CURLOPT_CONNECTTIMEOUT, 10);
-        curl_setopt($this->curlHandle, CURLOPT_TIMEOUT, 30);
+        $connectTimeout = defined('CURL_CONNECT_TIMEOUT') ? CURL_CONNECT_TIMEOUT : 10;
+        $timeout = defined('CURL_TIMEOUT') ? CURL_TIMEOUT : 30;
+        curl_setopt($this->curlHandle, CURLOPT_CONNECTTIMEOUT, $connectTimeout);
+        curl_setopt($this->curlHandle, CURLOPT_TIMEOUT, $timeout);
+
+        // SSL verification per config
+        $verify = defined('CURL_VERIFY_SSL') ? CURL_VERIFY_SSL : true;
+        curl_setopt($this->curlHandle, CURLOPT_SSL_VERIFYPEER, $verify);
+        curl_setopt($this->curlHandle, CURLOPT_SSL_VERIFYHOST, $verify ? 2 : 0);
+        if ($verify && defined('CA_BUNDLE_PATH') && is_string(CA_BUNDLE_PATH) && file_exists(CA_BUNDLE_PATH)) {
+            curl_setopt($this->curlHandle, CURLOPT_CAINFO, CA_BUNDLE_PATH);
+        }
+
+        // Debug verbosity per config/flag
+        if (defined('DEBUG_CURL') && DEBUG_CURL) {
+            curl_setopt($this->curlHandle, CURLOPT_VERBOSE, true);
+        }
     }
 
     private function setJsonHeaders()

@@ -218,6 +218,36 @@ while (true) {
                 if ($uploaded) {
                     // Direkt danach Prozess RECHNUNGEN v1 Step 10 starten und senden
                     $processInfo = startAndSendProcess($client, 'RECHNUNGEN', 1, 10);
+
+                    // Nach erfolgreichem Start: WorkflowId/IncidentNumber ins Archiv schreiben
+                    if (!empty($processInfo['workflowId']) || !empty($processInfo['incidentNo'])) {
+                        $patchRoute = 'application/jobarchive/archives/' . ARCHIVE . '/indexdata';
+                        $indexFields = [];
+                        if (!empty($processInfo['workflowId'])) {
+                            $indexFields[] = [ 'name' => ARCHIVE_FIELD_WORKFLOW_ID, 'value' => (string)$processInfo['workflowId'] ];
+                        }
+                        if (!empty($processInfo['incidentNo'])) {
+                            $indexFields[] = [ 'name' => ARCHIVE_FIELD_INCIDENT_NO, 'value' => (string)$processInfo['incidentNo'] ];
+                        }
+                        if (!empty($indexFields)) {
+                            $payload = [
+                                'revisions' => [
+                                    [
+                                        'revisionId' => (string)($uploaded['revisionId'] ?? ''),
+                                        'indexFields' => $indexFields,
+                                    ],
+                                ],
+                            ];
+                            $client->setJson(true);
+                            $resp = $client->patch($patchRoute, $payload);
+                            $client->setJson(false);
+                            if (count($resp)) {
+                                echo "Workflow/Incident in Indexdaten gespeichert.\n";
+                            } else {
+                                echo "Konnte Workflow/Incident nicht in Indexdaten speichern.\n";
+                            }
+                        }
+                    }
                 }
 
                 $client->destroySession();

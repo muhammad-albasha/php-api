@@ -16,6 +16,22 @@ const JOBDATA_TABLE_GUID = ''; // GUID of JobData table for JobData examples
 const CURL_COOKIE_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'cookie_path';
 const FILE_STORAGE = __DIR__ . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR;
 
+// JobArchive index field names (adjust to match your archive configuration)
+// Existing fields already used: 'Aktiv', 'DocuID'. Add process metadata here:
+const ARCHIVE_FIELD_DOCUID = 'DocuID';
+const ARCHIVE_FIELD_WORKFLOW_ID = 'WorkflowId';       // e.g., 'WorkflowId' or the exact field name in your archive
+const ARCHIVE_FIELD_INCIDENT_NO = 'IncidentNumber';   // e.g., 'IncidentNumber'
+
+// cURL/HTTP configuration
+// If you get "SSL certificate problem: unable to get local issuer certificate",
+// either download a CA bundle (cacert.pem) and set CA_BUNDLE_PATH accordingly or
+// temporarily set CURL_VERIFY_SSL=false to unblock in development.
+const CURL_VERIFY_SSL = false; // if false => don't verify peer/host (NOT for production)
+const CA_BUNDLE_PATH = __DIR__ . DIRECTORY_SEPARATOR . 'cacert.pem'; // place cacert.pem here if available
+const CURL_CONNECT_TIMEOUT = 10; // seconds
+const CURL_TIMEOUT = 60; // seconds
+const DEBUG_CURL = false; // enable CURLOPT_VERBOSE logs
+
 // Ensure required local directories exist at runtime
 if (!is_dir(CURL_COOKIE_PATH)) {
 	@mkdir(CURL_COOKIE_PATH, 0777, true);
