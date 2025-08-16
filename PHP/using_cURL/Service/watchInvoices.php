@@ -31,9 +31,10 @@ function listCandidateFiles(string $dir): array
     foreach ($files as $f) {
         if ($f === '.' || $f === '..') continue;
         $path = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $f;
-        if (!is_file($path)) continue;
-        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-        if (in_array($ext, ['pdf', 'png', 'jpg', 'jpeg', 'tif', 'tiff'])) {
+    if (!is_file($path)) continue;
+    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    // Allow typical e-invoice containers as well (xml, cii, zip)
+    if (in_array($ext, ['pdf', 'png', 'jpg', 'jpeg', 'tif', 'tiff', 'xml', 'cii', 'zip'])) {
             $out[] = $path;
         }
     }
@@ -47,14 +48,112 @@ function generateDocuId(string $filepath): string
     return date('YmdHis') . '_' . substr(sha1($filepath . '|' . microtime(true)), 0, 8);
 }
 
+function detectEinvoiceType(string $filepath): string
+{
+    $ext = strtolower(pathinfo($filepath, PATHINFO_EXTENSION));
+
+    // Helper closures to read head/tail safely
+    $readHead = function(string $path, int $len = 131072) {
+        return @file_get_contents($path, false, null, 0, $len) ?: '';
+    };
+    $readTail = function(string $path, int $len = 131072) {
+        $size = @filesize($path);
+        if ($size === false) return '';
+        $start = max(0, $size - $len);
+        $fh = @fopen($path, 'rb');
+        if (!$fh) return '';
+        if ($start > 0) @fseek($fh, $start);
+        $data = @fread($fh, $len) ?: '';
+        @fclose($fh);
+        return $data;
+    };
+
+    // PDF: try detect ZUGFeRD/Factur-X embedded XML
+    if ($ext === 'pdf') {
+        $head = strtolower($readHead($filepath, 262144));
+        $tail = strtolower($readTail($filepath, 1048576)); // last ~1MB
+        $blob = $head . "\n" . $tail;
+
+        $hasEmbedded = (strpos($blob, '/embeddedfiles') !== false) || (strpos($blob, '/afrelationship') !== false);
+        $hasZugferd = (strpos($blob, 'zugferd') !== false) || (strpos($blob, 'urn:ferd') !== false);
+        $hasFacturx = (strpos($blob, 'factur-x') !== false) || (strpos($blob, 'facturx') !== false);
+        $hasCii = (strpos($blob, 'crossindustryinvoice') !== false) || (strpos($blob, 'rsm:crossindustryinvoice') !== false);
+
+        if ($hasEmbedded && ($hasZugferd || $hasFacturx || $hasCii)) {
+            if ($hasFacturx) return 'Factur-X';
+            if ($hasZugferd) return 'ZUGFeRD';
+            // If embedded but only CII markers are visible, assume Factur-X container
+            return 'Factur-X';
+        }
+        return 'PDF';
+    }
+
+    // ZIP: inspect inner XML files for type
+    if ($ext === 'zip' && class_exists('ZipArchive')) {
+        $zip = new ZipArchive();
+        if ($zip->open($filepath) === true) {
+            for ($i = 0; $i < $zip->numFiles; $i++) {
+                $stat = $zip->statIndex($i);
+                if (!$stat) continue;
+                $name = strtolower($stat['name'] ?? '');
+                if (substr($name, -4) === '.xml' || substr($name, -4) === '.cii') {
+                    $stream = $zip->getStream($stat['name']);
+                    if ($stream) {
+                        $xmlHead = stream_get_contents($stream, 262144) ?: '';
+                        fclose($stream);
+                        $type = detectXmlInvoiceType($xmlHead);
+                        if ($type !== 'XML') { $zip->close(); return $type; }
+                    }
+                }
+            }
+            $zip->close();
+        }
+        return 'ZIP';
+    }
+
+    // XML/CII files
+    if (in_array($ext, ['xml', 'cii'])) {
+        $head = $readHead($filepath, 262144);
+        return detectXmlInvoiceType($head);
+    }
+
+    return strtoupper($ext);
+}
+
+function detectXmlInvoiceType(string $xmlHead): string
+{
+    $h = strtolower($xmlHead);
+
+    // XRechnung marker (KoSIT URN or the word xrechnung in CustomizationID/Profile)
+    $isUbl = (strpos($h, 'urn:oasis:names:specification:ubl:schema:xsd:invoice-2') !== false) ||
+             (strpos($h, 'commonbasiccomponents-2') !== false) ||
+             (strpos($h, '<invoice ') !== false && strpos($h, ':invoice') !== false && strpos($h, 'ubl') !== false);
+    $hasXrech = (strpos($h, 'xrechnung') !== false) || (strpos($h, 'kosit') !== false);
+    if ($isUbl && $hasXrech) return 'XRechnung';
+    if ($isUbl) return 'UBL';
+
+    // UN/CEFACT CII markers
+    $isCii = (strpos($h, 'crossindustryinvoice') !== false) ||
+             (strpos($h, 'rsm:crossindustryinvoice') !== false) ||
+             (strpos($h, 'un/cefact') !== false) ||
+             (strpos($h, 'qdt:') !== false && strpos($h, 'udt:') !== false && strpos($h, 'ram:') !== false);
+    if ($isCii) return 'CII'; // aka UN/CEFACT CII
+
+    // Generic XML fallback
+    return 'XML';
+}
+
 function uploadInvoice(CurlClient $client, string $filepath, string $docuId)
 {
     // Build multipart form according to archiveDocument.php example
     $file = new CURLFile($filepath);
+    $dataType = detectEinvoiceType($filepath);
     $indexFields = [
         // Map your archive index field names here; adjust to actual field names in your archive
         'indexFields[0][name]' => 'Aktiv',
         'indexFields[0][value]' => '1',
+        'indexFields[1][name]' => ARCHIVE_FIELD_DATA_TYPE,
+        'indexFields[1][value]' => $dataType,
         'files[0]' => $file,
     ];
 

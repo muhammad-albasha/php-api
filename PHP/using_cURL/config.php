@@ -21,6 +21,7 @@ const FILE_STORAGE = __DIR__ . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARAT
 const ARCHIVE_FIELD_DOCUID = 'DocuID';
 const ARCHIVE_FIELD_WORKFLOW_ID = 'WorkflowId';       // e.g., 'WorkflowId' or the exact field name in your archive
 const ARCHIVE_FIELD_INCIDENT_NO = 'IncidentNumber';   // e.g., 'IncidentNumber'
+const ARCHIVE_FIELD_DATA_TYPE = 'DataType';           // e.g., 'DataType' to store e-invoice format (UBL/XRechnung/CII/PDF)
 
 // cURL/HTTP configuration
 // If you get "SSL certificate problem: unable to get local issuer certificate",
